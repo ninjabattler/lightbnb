@@ -1,3 +1,5 @@
+const { compareSync } = require("bcrypt");
+
 module.exports = function(router, database) {
 
   router.get('/properties', (req, res) => {
@@ -28,6 +30,7 @@ module.exports = function(router, database) {
     database.addProperty({...req.body, owner_id: userId})
       .then(property => {
         res.send(property);
+        console.log(property)
       })
       .catch(e => {
         console.error(e);
