@@ -46,7 +46,7 @@ const getUserWithId = function(id) {
   SELECT * FROM users
   WHERE id = $1;
   `, [id])
-  .then(res => res.rows);
+  .then(res => res.rows[0]);
 }
 exports.getUserWithId = getUserWithId;
 
@@ -78,7 +78,14 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  // return getAllProperties(null, 2);
+  return pool.query(`
+  SELECT properties.* FROM properties
+  JOIN reservations ON properties.id = reservations.property_id
+  WHERE reservations.guest_id IN (SELECT id FROM users WHERE id = $1)
+  LIMIT $2;
+  `, [guest_id, limit])
+  .then(res => res.rows);
 }
 exports.getAllReservations = getAllReservations;
 
